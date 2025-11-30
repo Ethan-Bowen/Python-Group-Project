@@ -1,3 +1,9 @@
+import calendar
+from datetime import datetime
+
+def is_admin(): #will check if the user ID is the admin ID (I believe we should hardcode this)
+    return self.False
+
 class Shift_schedule: #contains all the info on the shift schedule
     def empty(self):
         return
@@ -11,8 +17,44 @@ class User_profile: #contains the info for a user, including their name, ID, pos
 
 
 class Calendar: #contains the info for the calendar
-    def empty(self):
-        return
+    def __init__(self, year: int, month: int):
+        if not (1 <= month <= 12):
+            raise ValueError("Month must be between 1 and 12.")
+        self.year = year
+        self.month = month
+        self.events = {}
+
+    def display(self): #This is the display for the calendar
+        cal = calendar.TextCalendar(calendar.SUNDAY)
+        month_str = cal.formatmonth(self.year, self.month)
+        print(month_str)
+
+        if self.events:
+            print("Events:")
+            for day in sorted(self.events):
+                date_str = f"{self.year}-{self.month:02d}-{day:02d}"
+                print(f" {date_str}: {', '.join(self.events[day])}")
+        else:
+            print("No events scheduled.")
+
+        def add_event(self, day: int, event: str): #This is the function to add events. If admin returns false, then an error is thrown
+            if not is_admin():
+                raise PermissionError("You do not have permission to add events.")
+            if not (1 <= day <= calendar.monthrange(self.year, self.month)[1]):
+                raise ValueError("Invalid day for this month.")
+            self.events.setdefault(day, []).append(event)
+            print(f"Event added on {self.year}-{self.month:02d}-{day:02d}: {event}")
+
+    def remove_event(self, day: int, event: str): #This is the function to remove events. is_admin check does the same thing here as above
+        if not is_admin():
+            raise PermissionError("You do not have permission to remove events.")
+        if day in self.events and event in self.events[day]:
+            self.events[day].remove(event)
+            if not self.events[day]:
+                del self.events[day]
+            print(f"Event removed from {self.year}-{self.month:02d}-{day:02d}: {event}")
+        else:
+            print("Event not found.")
 
 
 
@@ -23,8 +65,7 @@ def load_info(): #loads the info from the data files into the program
 def export_info(): #exports all of the data into the data files
     return
 
-def is_admin(): #will check if the user ID is the admin ID (I believe we should hardcode this)
-    return False
+
 
 
 def login(): #will compare the input info to the possible logins in the database
