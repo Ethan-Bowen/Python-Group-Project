@@ -2,7 +2,7 @@ import calendar
 from datetime import datetime
 
 def is_admin(): #will check if the user ID is the admin ID (I believe we should hardcode this)
-    return self.False
+    return False
 
 class Shift_schedule: #contains all the info on the shift schedule
     def empty(self):
@@ -55,7 +55,7 @@ class Calendar: #contains the info for the calendar
             print(f"Event removed from {self.year}-{self.month:02d}-{day:02d}: {event}")
         else:
             print("Event not found.")
-
+    return
 
 
 def load_info(): #loads the info from the data files into the program
