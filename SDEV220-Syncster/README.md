@@ -1,1 +1,0 @@
-# SDEV220-Syncster
