@@ -112,11 +112,6 @@ def open_shift_schedule(): #the shift schedule is printed here
     return
 
 
-def open_calendar(): #the calendar is printed here
-    return
-
-
-
 def admin_menu(): #the admin specific menu
     print("Admin login succesful")
     print("1. Open admin profile")
@@ -154,22 +149,6 @@ def admin_open_shift_schedule(): #prints the schedule of all users and allows fo
 
 
 def display_shift_schedule(): #code for displaying the schedule
-    return
-
-
-def edit_display_schedule(): #code for editing the schedule
-    return
-
-
-def admin_open_calendar(): #code for opening and editing the calendar
-    display_calendar()
-    edit_calendar()
-    return
-
-def display_calendar(): #code for displaying the calendar
-    return
-
-def edit_calendar(): #code for editing the calendar
     return
 
 
