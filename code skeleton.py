@@ -1,5 +1,6 @@
 import calendar
 from datetime import datetime
+import os
 
 def is_admin(): #will check if the user ID is the admin ID (I believe we should hardcode this)
     return False
@@ -38,16 +39,16 @@ class Calendar: #contains the info for the calendar
             print("No events scheduled.")
 
         def add_event(self, day: int, event: str): #This is the function to add events. If admin returns false, then an error is thrown
-            if not is_admin():
-                raise PermissionError("You do not have permission to add events.")
+            """if not is_admin():
+                raise PermissionError("You do not have permission to add events.")"""
             if not (1 <= day <= calendar.monthrange(self.year, self.month)[1]):
                 raise ValueError("Invalid day for this month.")
             self.events.setdefault(day, []).append(event)
             print(f"Event added on {self.year}-{self.month:02d}-{day:02d}: {event}")
 
     def remove_event(self, day: int, event: str): #This is the function to remove events. is_admin check does the same thing here as above
-        if not is_admin():
-            raise PermissionError("You do not have permission to remove events.")
+        """if not is_admin():
+            raise PermissionError("You do not have permission to remove events.")"""
         if day in self.events and event in self.events[day]:
             self.events[day].remove(event)
             if not self.events[day]:
@@ -55,47 +56,138 @@ class Calendar: #contains the info for the calendar
             print(f"Event removed from {self.year}-{self.month:02d}-{day:02d}: {event}")
         else:
             print("Event not found.")
-    return
-
-
-def load_info(): #loads the info from the data files into the program
-    return
-
-
-def export_info(): #exports all of the data into the data files
-    return
 
 
 
 
-def login(): #will compare the input info to the possible logins in the database
-             #if login is successful, the user's profile will be put into a variable, and passed along as needed
-    return
+
+class Login:
+    def __init__(self, accounts_file="accounts.txt"):
+        self.accounts_file = accounts_file
+        self.admin_username = "admin"
+        self.admin_password = "admin123"
+        if not os.path.exists(self.accounts_file):
+            with open(self.accounts_file, "w") as f:
+                pass
+
+    def run(self):
+        while True:
+            print("\n=== Welcome to the Login System ===")
+            print("1. Login")
+            print("2. Create New Account")
+            print("3. Exit")
+            choice = input("Enter choice (1-3): ").strip()
+
+            if choice == "1":
+                self.login()
+            elif choice == "2":
+                self.create_account()
+            elif choice == "3":
+                print("Goodbye!")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+    def login(self):
+        username = input("Enter username: ").strip()
+        password = input("Enter password: ").strip()
+
+        if username == self.admin_username and password == self.admin_password:
+            print("\n Admin login successful!")
+            self.admin_menu()
+            return
+
+        if self.check_credentials(username, password):
+            print("\n Login successful!")
+            self.general_user_menu(username)
+        else:
+            print("\n Invalid username or password.")
+
+    def create_account(self):
+        username = input("Choose a username: ").strip()
+        password = input("Choose a password: ").strip()
+
+        if not username or not password:
+            print("Username and password cannot be empty.")
+            return
+
+        if self.username_exists(username):
+            print("Username already exists. Please choose another.")
+            return
+
+        with open(self.accounts_file, "a") as f:
+            f.write(f"{username},{password}\n")
+        print("Account created successfully!")
+
+    def check_credentials(self, username, password):
+        try:
+            with open(self.accounts_file, "r") as f:
+                for line in f:
+                    stored_user, stored_pass = line.strip().split(",", 1)
+                    if stored_user == username and stored_pass == password:
+                        return True
+        except FileNotFoundError:
+            pass
+        return False
+
+    def username_exists(self, username):
+        try:
+            with open(self.accounts_file, "r") as f:
+                for line in f:
+                    stored_user, _ = line.strip().split(",", 1)
+                    if stored_user == username:
+                        return True
+        except FileNotFoundError:
+            pass
+        return False
+        
+    def general_user_menu(self, username): #menu used by general users
+        print("User login succesful")
+        print("1. Open user profile")
+        print("2. Open avalibility menu")
+        print("3. Open shift schedule")
+        print("4. Open calendar")
+        choice = str(input("Input the number corresponding which window you wish to view"))
+        match choice:
+            #case '1':
+                #load_profile()
+            #case '2':
+                #open_avaliability_menu()
+            #case '3':
+                #open_shift_schedule()
+            case '4':
+                now = datetime.now()
+                cal = Calendar(now.year, now.month)
+                cal.display()
+            case _:
+                print("Bad input. Try again")
+        return        
+
+    def admin_menu(self, username): #the admin specific menu
+        print("Admin login succesful")
+        print("1. Open admin profile")
+        print("2. Open avalibility menu")
+        print("3. Open shift schedule")
+        print("4. Open calendar")
+        choice = str(input("Input the number corresponding which window you wish to view"))
+        match choice:
+            #case '1':
+                #load_admin_profile()
+            #case '2':
+                #open_avaliability_menu()
+            #case '3':
+                #shift_schedule()
+            case '4':
+                now = datetime.now()
+                cal = Calendar(now.year, now.month)
+                cal.display()
+            case _:
+                print("Bad input. Try again")
+
+        return
 
 
-def create_profile(): #creates a profile and adds it to the memory
-    return
 
-
-def general_user_menu(): #menu used by general users
-    print("User login succesful")
-    print("1. Open user profile")
-    print("2. Open avalibility menu")
-    print("3. Open shift schedule")
-    print("4. Open calendar")
-    choice = str(input("Input the number corresponding which window you wish to view"))
-    match choice:
-        case '1':
-            load_profile()
-        case '2':
-            open_avaliability_menu()
-        case '3':
-            open_shift_schedule()
-        case '4':
-            open_calendar()
-        case _:
-            print("Bad input. Try again")
-    return
 
 
 def load_profile(): #the user's profile info is printed here
