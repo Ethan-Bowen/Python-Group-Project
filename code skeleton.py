@@ -5,9 +5,6 @@ import os
 def is_admin(): #will check if the user ID is the admin ID (I believe we should hardcode this)
     return False
 
-class Shift_schedule: #contains all the info on the shift schedule
-    def empty(self):
-        return
 
 
 
@@ -15,6 +12,23 @@ class User_profile: #contains the info for a user, including their name, ID, pos
     def empty(self):
         return
 
+
+
+class Shift_schedule: #contains all the info on the shift schedule
+    def __init__(self, accounts_file="accounts.txt"):
+        self.accounts_file = accounts_file
+        self.shifts = {}
+    def assign_shift(self, username: str, date: str, shift: str):
+        if username not in self.shifts:
+            self.shifts[username] = {}
+        self.shifts[username][date] = shift
+        print(f"Assigned shift '{shift}' to {username} on {date}.")
+        return True
+    def view_shifts(self):
+        for username, dates in self.shifts.items():
+            print(f"Shifts for {username}:")
+            for date, shift in dates.items():
+                print(f"  {date}: {shift}")
 
 
 class Calendar: #contains the info for the calendar
@@ -38,17 +52,15 @@ class Calendar: #contains the info for the calendar
         else:
             print("No events scheduled.")
 
-        def add_event(self, day: int, event: str): #This is the function to add events. If admin returns false, then an error is thrown
-            """if not is_admin():
-                raise PermissionError("You do not have permission to add events.")"""
-            if not (1 <= day <= calendar.monthrange(self.year, self.month)[1]):
-                raise ValueError("Invalid day for this month.")
-            self.events.setdefault(day, []).append(event)
-            print(f"Event added on {self.year}-{self.month:02d}-{day:02d}: {event}")
+    def add_event(self, day: int, event: str): #This is the function to add events. If admin returns false, then an error is thrown
+            
+        if not (1 <= day <= calendar.monthrange(self.year, self.month)[1]):
+            raise ValueError("Invalid day for this month.")
+        self.events.setdefault(day, []).append(event)
+        print(f"Event added on {self.year}-{self.month:02d}-{day:02d}: {event}")
 
     def remove_event(self, day: int, event: str): #This is the function to remove events. is_admin check does the same thing here as above
-        """if not is_admin():
-            raise PermissionError("You do not have permission to remove events.")"""
+        
         if day in self.events and event in self.events[day]:
             self.events[day].remove(event)
             if not self.events[day]:
@@ -69,6 +81,7 @@ class Login:
         if not os.path.exists(self.accounts_file):
             with open(self.accounts_file, "w") as f:
                 pass
+
 
     def run(self):
         while True:
@@ -94,8 +107,7 @@ class Login:
 
         if username == self.admin_username and password == self.admin_password:
             print("\n Admin login successful!")
-            self.admin_menu()
-            return
+            self.admin_menu(username)
 
         if self.check_credentials(username, password):
             print("\n Login successful!")
@@ -142,45 +154,126 @@ class Login:
         return False
         
     def general_user_menu(self, username): #menu used by general users
-        print("User login succesful")
         print("1. Open user profile")
         print("2. Open avalibility menu")
         print("3. Open shift schedule")
         print("4. Open calendar")
         choice = str(input("Input the number corresponding which window you wish to view"))
         match choice:
-            #case '1':
-                #load_profile()
+            case '1':
+                while True:
+                    print(f"Username {username}.")
+                    sub_choice = str(input("Press 1 to exit.").strip())
+                    match sub_choice:
+                        case '1':
+                            break
+                self.general_user_menu(username)
+
             #case '2':
                 #open_avaliability_menu()
-            #case '3':
-                #open_shift_schedule()
+
+            case '3':
+                shift = Shift_schedule()
+                while True:
+                    print("1. View Shifts")
+                    print("2. Back to User Menu")
+                    sub_choice = str(input("Enter choice (1-2): ").strip())
+                    match sub_choice:
+                        case '1':
+                            shift.view_shifts()
+                        case '2':
+                            break
+                        case _:
+                            print("Bad input. Try again")
+                self.general_user_menu(username)
+
             case '4':
                 now = datetime.now()
                 cal = Calendar(now.year, now.month)
-                cal.display()
+                while True:   
+                    cal.display()
+                    sub_choice = str(input("Press 1 to exit.").strip())
+                    match sub_choice:
+                        case '1':
+                            break
+                self.general_user_menu(username)
             case _:
                 print("Bad input. Try again")
         return        
 
     def admin_menu(self, username): #the admin specific menu
-        print("Admin login succesful")
         print("1. Open admin profile")
         print("2. Open avalibility menu")
         print("3. Open shift schedule")
         print("4. Open calendar")
         choice = str(input("Input the number corresponding which window you wish to view"))
         match choice:
-            #case '1':
-                #load_admin_profile()
+            case '1':
+                while True:
+                    print(f"Username {username}.")
+                    sub_choice = str(input("Press 1 to exit.").strip())
+                    match sub_choice:
+                        case '1':
+                            break
+                self.admin_menu(username)
+
+
             #case '2':
                 #open_avaliability_menu()
-            #case '3':
-                #shift_schedule()
+
+            case '3':
+                shift = Shift_schedule()
+                while True:
+                    print("1. Assign Shift")
+                    print("2. View Shifts")
+                    print("3. Back to Admin Menu")
+                    sub_choice = str(input("Enter choice (1-3): ").strip())
+                    match sub_choice:
+                        case '1':
+                            username = input("Enter username to assign shift: ").strip()
+                            date = input("Enter date (YYYY-MM-DD): ").strip()
+                            shift_time = input("Enter shift (e.g., Morning, Evening): ").strip()
+                            shift.assign_shift(username, date, shift_time)
+                        case '2':
+                            shift.view_shifts()
+                        case '3':
+                            break
+                        case _:
+                            print("Bad input. Try again")
+                self.admin_menu(username)
+
             case '4':
                 now = datetime.now()
                 cal = Calendar(now.year, now.month)
-                cal.display()
+                while True:
+                    print("1. Add Event")
+                    print("2. Remove Event")
+                    print("3. Display Calendar")
+                    print("4. Back")
+                    cal_choice = input("Enter choice (1-4): ").strip()
+                    match cal_choice:
+                        case '1':
+                            try:
+                                day = int(input("Enter day of the month: ").strip())
+                                event = input("Enter event description: ").strip()
+                                cal.add_event(day, event)
+                            except Exception as e:
+                                print(f"Error: {e}")
+                        case '2':
+                            try:
+                                day = int(input("Enter day of the month: ").strip())
+                                event = input("Enter event description to remove: ").strip()
+                                cal.remove_event(day, event)
+                            except Exception as e:
+                                print(f"Error: {e}")
+                        case '3':
+                            cal.display()
+                        case '4':
+                            break
+                        case _:
+                            print("Bad input. Try again")
+                self.admin_menu(username)
+
             case _:
                 print("Bad input. Try again")
 
@@ -188,75 +281,6 @@ class Login:
 
 
 
-
-
-def load_profile(): #the user's profile info is printed here
-    return
-
-
-def open_avaliability_menu(): #the avaliability menu for the user is printed here, and the user is given the choice to edit it
-    return
-
-def edit_avalability(): #the availability can be changed here
-    return
-
-def open_shift_schedule(): #the shift schedule is printed here
-    return
-
-
-def admin_menu(): #the admin specific menu
-    print("Admin login succesful")
-    print("1. Open admin profile")
-    print("2. Open avalibility menu")
-    print("3. Open shift schedule")
-    print("4. Open calendar")
-    choice = str(input("Input the number corresponding which window you wish to view"))
-    match choice:
-        case '1':
-            load_admin_profile()
-        case '2':
-            admin_open_avaliability_menu()
-        case '3':
-            admin_open_shift_schedule()
-        case '4':
-            admin_open_calendar()
-        case _:
-            print("Bad input. Try again")
-
-    return
-
-
-def load_admin_profile(): #prints the profile used by the admin
-    return
-
-
-def admin_open_avaliability_menu(): #prints the avaliability of all users
-    return
-
-
-def admin_open_shift_schedule(): #prints the schedule of all users and allows for editing of the schedule
-    display_shift_schedule()
-    edit_display_schedule()
-    return
-
-
-def display_shift_schedule(): #code for displaying the schedule
-    return
-
-
-
 def main(): #main code block
-    load_info()
-
-    has_profile = input("Enter 1 if you already have a profile, or any other character otherwise")
-    if str(has_profile) != '1':
-        return
-
-    login()
-
-    done = False
-    while not done:
-        if is_admin():
-            admin_menu()
-        else:
-            general_user_menu()
+if __name__ == "__main__":
+    Login().run()
