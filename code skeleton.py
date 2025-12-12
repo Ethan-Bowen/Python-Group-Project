@@ -1,34 +1,95 @@
+import os
 import calendar
 from datetime import datetime
-import os
 
-def is_admin(): #will check if the user ID is the admin ID (I believe we should hardcode this)
-    return False
-
-
-
-
-class User_profile: #contains the info for a user, including their name, ID, position, etc.
-    def empty(self):
-        return
-
-
-
-class Shift_schedule: #contains all the info on the shift schedule
+class Shift_schedule:
     def __init__(self, accounts_file="accounts.txt"):
         self.accounts_file = accounts_file
         self.shifts = {}
+
     def assign_shift(self, username: str, date: str, shift: str):
         if username not in self.shifts:
             self.shifts[username] = {}
         self.shifts[username][date] = shift
         print(f"Assigned shift '{shift}' to {username} on {date}.")
         return True
+
     def view_shifts(self):
         for username, dates in self.shifts.items():
             print(f"Shifts for {username}:")
             for date, shift in dates.items():
                 print(f"  {date}: {shift}")
+
+class Availability:
+    def __init__(self, accounts_file="accounts.txt"):
+        self.accounts_file = accounts_file
+        self.availability_dict = {}
+
+    def load_accounts(self):
+        accounts = {}
+        try:
+            with open(self.accounts_file, "r") as f:
+                for line in f:
+                    username, password, availability = line.strip().split(",", 2)
+                    accounts[username] = {"password": password, "availability": availability}
+                    self.availability_dict[username] = availability
+        except FileNotFoundError:
+            pass
+        return accounts
+
+    def update_availability(self, username, availability_str):
+        accounts = self.load_accounts()
+        if username in accounts:
+            accounts[username]['availability'] = availability_str
+            self.save_accounts(accounts)
+            print(f"Availability for {username} updated successfully.")
+            return True
+        else:
+            print("Username not found.")
+            return False
+
+    def save_accounts(self, accounts):
+        with open(self.accounts_file, "w") as f:
+            for username, info in accounts.items():
+                f.write(f"{username},{info['password']},{info['availability']}\n")
+
+
+
+    def get_availability(self):
+        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        shifts = ["Morning", "Afternoon", "Evening"]
+        availability_dict = {}
+           
+        print("\nEnter your availability (Y/N) for each shift on each day:")
+        for day in days:
+            for shift in shifts:
+                while True:
+                    choice = input(f"{day} - {shift}: ").strip().lower()
+                    if choice in ['y', 'n']:
+                        availability_dict[f"{day}_{shift}"] = '1' if choice == 'y' else '0'
+                        break
+                    else:
+                        print("Invalid input. Please enter 'Y' or 'N'.")
+        availability_str = ''.join(availability_dict[f"{day}_{shift}"] for day in days for shift in shifts)
+
+        return availability_str
+
+    def display_availability(self, availability_str):
+        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        shifts = ["Morning", "Afternoon", "Evening"]
+        print("\nYour Availability:")
+        index = 0
+        for day in days:
+            print(f"{day}: ", end="")
+            for shift in shifts:
+                status = "Available" if availability_str[index] == '1' else "Not Available"
+                print(f"{shift} - {status}; ", end="")
+                index += 1
+            print()
+    
+              
+
+        
 
 
 class Calendar: #contains the info for the calendar
@@ -111,13 +172,14 @@ class Login:
 
         if self.check_credentials(username, password):
             print("\n Login successful!")
-            self.general_user_menu(username)
+            self.general_user_menu(username, password)
         else:
             print("\n Invalid username or password.")
 
     def create_account(self):
         username = input("Choose a username: ").strip()
         password = input("Choose a password: ").strip()
+        availability = 000000000000000000000
 
         if not username or not password:
             print("Username and password cannot be empty.")
@@ -128,14 +190,14 @@ class Login:
             return
 
         with open(self.accounts_file, "a") as f:
-            f.write(f"{username},{password}\n")
+            f.write(f"{username},{password},{availability}\n")
         print("Account created successfully!")
 
     def check_credentials(self, username, password):
         try:
             with open(self.accounts_file, "r") as f:
                 for line in f:
-                    stored_user, stored_pass = line.strip().split(",", 1)
+                    stored_user, stored_pass, stored_availability = line.strip().split(",", 2)
                     if stored_user == username and stored_pass == password:
                         return True
         except FileNotFoundError:
@@ -146,14 +208,14 @@ class Login:
         try:
             with open(self.accounts_file, "r") as f:
                 for line in f:
-                    stored_user, _ = line.strip().split(",", 1)
+                    stored_user, stored_pass, stored_availability = line.strip().split(",", 2)
                     if stored_user == username:
                         return True
         except FileNotFoundError:
             pass
         return False
         
-    def general_user_menu(self, username): #menu used by general users
+    def general_user_menu(self, username, password): #menu used by general users
         print("1. Open user profile")
         print("2. Open avalibility menu")
         print("3. Open shift schedule")
@@ -163,14 +225,35 @@ class Login:
             case '1':
                 while True:
                     print(f"Username {username}.")
+                    print(f"Password {password}.")
                     sub_choice = str(input("Press 1 to exit.").strip())
                     match sub_choice:
                         case '1':
                             break
-                self.general_user_menu(username)
+                self.general_user_menu(username, password)
 
-            #case '2':
-                #open_avaliability_menu()
+            case '2':
+                availability = Availability()
+                while True:
+                    print("1. View Availability")
+                    print("2. Update Availability")
+                    print("3. Back to User Menu")
+                    sub_choice = str(input("Enter choice (1-3): ").strip())
+                    match sub_choice:
+                        case '1':
+                            accounts = availability.load_accounts()
+                            if username in accounts:
+                                availability.display_availability(accounts[username]['availability'])
+                            else:
+                                print("Username not found.")
+                        case '2':
+                            new_availability = availability.get_availability()
+                            availability.update_availability(username, new_availability)
+                        case '3':
+                            break
+                        case _:
+                            print("Bad input. Try again")
+                self.general_user_menu(username, password)
 
             case '3':
                 shift = Shift_schedule()
@@ -185,7 +268,7 @@ class Login:
                             break
                         case _:
                             print("Bad input. Try again")
-                self.general_user_menu(username)
+                self.general_user_menu(username, password)
 
             case '4':
                 now = datetime.now()
@@ -196,12 +279,12 @@ class Login:
                     match sub_choice:
                         case '1':
                             break
-                self.general_user_menu(username)
+                self.general_user_menu(username, password)
             case _:
                 print("Bad input. Try again")
         return        
 
-    def admin_menu(self, username): #the admin specific menu
+    def admin_menu(self, username, password): #the admin specific menu
         print("1. Open admin profile")
         print("2. Open avalibility menu")
         print("3. Open shift schedule")
@@ -211,15 +294,34 @@ class Login:
             case '1':
                 while True:
                     print(f"Username {username}.")
+                    print(f"Password {password}.")
                     sub_choice = str(input("Press 1 to exit.").strip())
                     match sub_choice:
                         case '1':
                             break
-                self.admin_menu(username)
+                self.admin_menu(username, password)
 
 
-            #case '2':
-                #open_avaliability_menu()
+            case '2':
+                availability = Availability()
+                while True:
+                    print("1. View User Availability")
+
+                    print("2. Back to Admin Menu")
+                    sub_choice = str(input("Enter choice (1-3): ").strip())
+                    match sub_choice:
+                        case '1':
+                            user_to_view = input("Enter username to view availability: ").strip()
+                            accounts = availability.load_accounts()
+                            if user_to_view in accounts:
+                                availability.display_availability(accounts[user_to_view]['availability'])
+                            else:
+                                print("Username not found.")
+                        case '2':
+                            break
+                        case _:
+                            print("Bad input. Try again")
+                self.admin_menu(username, password)
 
             case '3':
                 shift = Shift_schedule()
@@ -240,7 +342,7 @@ class Login:
                             break
                         case _:
                             print("Bad input. Try again")
-                self.admin_menu(username)
+                self.admin_menu(username, password)
 
             case '4':
                 now = datetime.now()
@@ -272,7 +374,7 @@ class Login:
                             break
                         case _:
                             print("Bad input. Try again")
-                self.admin_menu(username)
+                self.admin_menu(username, password)
 
             case _:
                 print("Bad input. Try again")
@@ -281,6 +383,5 @@ class Login:
 
 
 
-def main(): #main code block
 if __name__ == "__main__":
     Login().run()
