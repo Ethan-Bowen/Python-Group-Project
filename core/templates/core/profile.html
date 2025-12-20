@@ -1,0 +1,28 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>{{ employee.user.get_full_name }}</h2>
+    <hr>
+
+    <p><strong>Username:</strong> {{ employee.user.username }}</p>
+    <p><strong>Email:</strong> {{ employee.user.email }}</p>
+    <p><strong>Role:</strong> {{ employee.role }}</p>
+
+    <h4 class="mt-4">Upcoming Shifts</h4>
+    <ul>
+        {% for shift in employee.shift_set.all %}
+            <li>
+                {{ shift.date }} — {{ shift.start_time }} to {{ shift.end_time }}
+                ({{ shift.role_needed }})
+            </li>
+        {% empty %}
+            <li>No shifts assigned.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="/calendar/" class="btn btn-secondary mt-3">Back to Calendar</a>
+
+</div>
+{% endblock %}

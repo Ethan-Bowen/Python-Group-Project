@@ -1,0 +1,79 @@
+### Primary Color Scheme for Login Page
+
+body {
+  background-color: var(--background-color);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-container {
+  background-color: var(--neutral-light);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-align: center;
+  width: 320px;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.login-logo img {
+  width: 70px;   /* matches your old .logo size */
+  height: auto;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  color: var(--secondary-color);
+}
+
+label {
+  display: block;
+  text-align: left;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: var(--neutral-dark);
+}
+
+input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.25rem;
+  border: 1px solid var(--primary-color);
+  border-radius: 6px;
+  background-color: var(--neutral-light);
+}
+
+button {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.7rem;
+  background-color: var(--primary-color);
+  color: var(--neutral-light);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+}
+
+.forgot-password {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
