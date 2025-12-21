@@ -49,7 +49,7 @@ class DashboardView(TemplateView):
         context["shifts"] = Shift.objects.all()
         return context
 
-@login_required
+
 class ProfileView(TemplateView):
     template_name = "core/profile.html"
     
