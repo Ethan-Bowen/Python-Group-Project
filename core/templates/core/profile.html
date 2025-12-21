@@ -8,7 +8,7 @@ p{% extends "core/base.html" %}
 	
 	{% if request.user.is_superuser or request.user.employee.role == "admin" %}
     <a href="{% url 'edit_profile' employee.user.id %}" class="btn btn-warning mb-3">
-        TEdit Profile
+        Edit Profile
     </a>
 {% endif %}
 
