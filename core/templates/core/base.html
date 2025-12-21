@@ -35,12 +35,12 @@
 
         {% if user.is_authenticated %}
 
-          <!-- Profile -->
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'profile_detail' request.user.id %}">
-              <i class="bi bi-person-circle me-1"></i> Profile
+        <!-- Profile -->
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile' %}">
+                <i class="bi bi-person-circle me-1"></i> Profile
             </a>
-          </li>
+        </li>
 
           <!-- Calendar -->
           <li class="nav-item">
