@@ -5,6 +5,8 @@ p{% extends "core/base.html" %}
 
     <h2>{{ employee.user.get_full_name }}</h2>
     <hr>
+
+	<p>Debug: employee={{ employee }}, user_id={{ employee.user.id }}</p>
 	
 	{% if request.user.is_superuser or request.user.employee.role == "admin" %}
     <a href="{% url 'edit_profile' employee.user.id %}" class="btn btn-warning mb-3">
