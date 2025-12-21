@@ -46,6 +46,6 @@
       <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
     </form>
 
-    <a href="{% url 'profile_detail' user_id=user.id %}" class="btn btn-secondary mt-3">Back to Profile</a>
+    <a href="{% url 'profile_detail' user_id=employee.user.id %}" class="btn btn-secondary mt-3">Back to Profile</a>
   </div>
 {% endblock %}
