@@ -8,11 +8,15 @@ p{% extends "core/base.html" %}
 
 
 	
-	{% if request.user.is_superuser or request.user.employee.role == "admin" %}
+{% if request.user.is_superuser or request.user.employee.role == "admin" %}
     {% if employee and employee.user %}
         <a href="{% url 'edit_profile' employee.user.id %}" class="btn btn-warning mb-3">
             Edit Profile
         </a>
+    {% else %}
+        <div class="alert alert-info">
+            <strong>Admin Account</strong> - No employee profile found. You are logged in as a system administrator.
+        </div>
     {% endif %}
 {% endif %}
 
