@@ -49,10 +49,10 @@ class DashboardView(TemplateView):
         context["shifts"] = Shift.objects.all()
         return context
 
-
+@login_required
 class ProfileView(TemplateView):
     template_name = "core/profile.html"
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
