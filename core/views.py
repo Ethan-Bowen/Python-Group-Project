@@ -53,6 +53,14 @@ class DashboardView(TemplateView):
 class ProfileView(TemplateView):
     template_name = "core/profile.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        employee = getattr(user, "employee", None)
+        context['employee'] = employee
+        context['user_obj'] = user
+        return context
+
 
 class CalendarView(TemplateView):
     template_name = "core/calendar.html"
