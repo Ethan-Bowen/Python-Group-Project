@@ -23,9 +23,9 @@ Tech Stack
 - AJAX/Fetch
 
 Running the Project
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+- pip install -r requirements.txt
+- python manage.py migrate
+- python manage.py runserver
 
 
 Visit the app at:
