@@ -4,10 +4,16 @@ from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 import json
 
 from .models import ShiftChangeRequest, Shift, Role, Employee
 from .calendar_backend import CalendarBackend
+from .models import Shift, Employee, Role
+from core.models import Shift
+
+
 
 # Approve / Decline Requests
 
@@ -36,6 +42,13 @@ def decline_request(request, request_id):
 class DashboardView(TemplateView):
     template_name = "core/dashboard.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["employees"] = Employee.objects.all()
+        context["roles"] = Role.objects.all()
+        context["shifts"] = Shift.objects.all()
+        return context
+
 
 class ProfileView(TemplateView):
     template_name = "core/profile.html"
@@ -52,7 +65,7 @@ class CalendarView(TemplateView):
 
 
 
-# Employee Profile (click from calendar)
+# Employee Profile from calendar
 
 class EmployeeProfileView(TemplateView):
     template_name = "core/profile.html"
@@ -70,7 +83,7 @@ class EmployeeProfileView(TemplateView):
 def shift_events(request):
     shifts = Shift.objects.all()
     events = []
-
+    
     for shift in shifts:
         try:
             # Safe employee lookup
@@ -89,13 +102,15 @@ def shift_events(request):
                 "title": employee_name,
                 "start": f"{shift.date}T{shift.start_time}",
                 "end": f"{shift.date}T{shift.end_time}",
-                "url": f"/employee/{employee_id}/" if employee_id else None,
+                "url": f"/profile/{employee_id}/" if employee_id else None,
             })
 
         except Exception as e:
             print("Error building event:", e)
-
+            
+    print("SHIFTS:", list(Shift.objects.values()))
     return JsonResponse(events, safe=False)
+
 
 
 
@@ -122,3 +137,70 @@ def create_shift(request):
         )
 
         return JsonResponse({"status": "ok", "id": shift.id})
+       
+@login_required
+def edit_profile(request, user_id):
+    if not request.user.is_superuser and request.user.employee.role != "admin":
+        return redirect("profile_detail", user_id=user_id)
+
+    user = get_object_or_404(User, id=user_id)
+    employee = user.employee
+
+    if request.method == "POST":
+        user.email = request.POST.get("email")
+        employee.phone_number = request.POST.get("phone_number")
+        employee.emergency_contact_name = request.POST.get("emergency_contact_name")
+        employee.emergency_contact_phone = request.POST.get("emergency_contact_phone")
+        employee.address = request.POST.get("address")
+        employee.job_title = request.POST.get("job_title")
+        employee.notes = request.POST.get("notes")
+
+        user.save()
+        employee.save()
+
+        return redirect("profile_detail", user_id=user_id)
+
+    return render(request, "core/edit_profile.html", {
+        "user_obj": user,
+        "employee": employee
+    })
+
+        
+def schedule_status(request):
+    today = timezone.now().date()
+    week_end = today + timedelta(days=7)
+
+    # Days with no shifts
+    days = [today + timedelta(days=i) for i in range(7)]
+    unscheduled_days = [
+        day for day in days
+        if not Shift.objects.filter(date=day).exists()
+    ]
+
+    # Roles with no assigned employee
+    unassigned_roles = Role.objects.filter(employee__isnull=True)
+
+    # Employees with no shifts this week
+    employees_without_shifts = [
+        e for e in Employee.objects.all()
+        if not Shift.objects.filter(employee=e, start_time__date__range=[today, week_end]).exists()
+    ]
+
+    return render(request, "schedule_status.html", {
+        "unscheduled_days": unscheduled_days,
+        "unassigned_roles": unassigned_roles,
+        "employees_without_shifts": employees_without_shifts,
+    })
+    
+@login_required
+def profile_detail(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    employee = getattr(user, "employee", None)
+
+    return render(request, "core/profile.html", {
+        "user_obj": user,
+        "employee": employee
+    })
+
+
+        

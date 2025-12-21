@@ -1,30 +1,20 @@
-{% extends 'base.html' %}
+{% extends 'core/base_login.html' %}
 {% load static %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/login.css' %}">
-{% endblock %}
 
 {% block content %}
 <div class="login-container">
 
-  <div class="login-logo">
-    <img src="{% static 'images/syncster_logo.png' %}" alt="Syncster Logo">
-  </div>
+    <div class="login-logo">
+        <img src="{% static 'images/syncster_logo.png' %}" alt="Syncster Logo">
+    </div>
 
-  <h1>Syncster</h1>
+    <h1>Login</hi>
 
-  <form method="POST">
-    {% csrf_token %}
-    <label for="username">User ID:</label>
-    <input type="text" id="username" name="username" required />
-
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required />
-
-    <button type="submit">Login</button>
-    <a href="{% url 'password_reset' %}" class="forgot-password">Forgot password?</a>
-  </form>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
 
 </div>
 {% endblock %}

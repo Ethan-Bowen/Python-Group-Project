@@ -4,48 +4,13 @@
 {% block content %}
 <h2>Shift Calendar</h2>
 
-<!-- Create Shift Button -->
 <button id="createShiftBtn" class="btn btn-primary mb-3">
     Create Shift
 </button>
 
 <div id="calendar"></div>
 
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var calendarEl = document.getElementById('calendar');
-
-  window.calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    events: '/api/shifts/',
-
-    // Clicking a date opens the modal
-    dateClick: function(info) {
-      document.getElementById("shiftDate").value = info.dateStr;
-      var modal = new bootstrap.Modal(document.getElementById("createShiftModal"));
-      modal.show();
-    },
-
-    // Clicking an event opens an edit modal
-    eventClick: function(info) {
-      alert("Editing coming next!");
-    }
-  });
-
-  calendar.render();
-
-  document.getElementById("createShiftBtn").addEventListener("click", function() {
-      var modal = new bootstrap.Modal(document.getElementById("createShiftModal"));
-      modal.show();
-  });
-
-});
-</script>
-
-<!-- Create Shift Modal --> 
+<!-- Create Shift Modal -->
 <div class="modal fade" id="createShiftModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -76,27 +41,26 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="mb-3">
             <label class="form-label">Role Needed</label>
             <select id="shiftRole" class="form-select" required>
-             <option value="">Select a role</option>
-             {% for role in roles %}
-               <option value="{{ role.id }}">{{ role.name }}</option>
-             {% endfor %}
-           </select>
+              <option value="">Select a role</option>
+              {% for role in roles %}
+                <option value="{{ role.id }}">{{ role.name }}</option>
+              {% endfor %}
+            </select>
           </div>
 
-         <div class="mb-3">
-          <label class="form-label">Assign Employee (optional)</label>
-          <select id="shiftEmployee" class="form-select">
-            <option value="">Unassigned</option>
-
-            {% for emp in employees %}
-             <option value="{{ emp.user.id }}"
-                     data-division="{{ emp.division }}">
-               {{ emp.employee_id }} — {{ emp.user.first_name }} {{ emp.user.last_name }}
-             </option>
-            {% endfor %}
-
-  </select>
-</div>
+          <div class="mb-3">
+            <label class="form-label">Assign Employee (optional)</label>
+            <select id="shiftEmployee" class="form-select">
+              <option value="">Unassigned</option>
+              {% for emp in employees %}
+                <option value="{{ emp.user.id }}">
+                  <a href="{% url 'profile_detail' emp.user.id %}">
+                     {{ emp.user.first_name }} {{ emp.user.last_name }}
+                  </a>
+                </option>
+              {% endfor %}
+            </select>
+          </div>
 
         </form>
       </div>
@@ -110,11 +74,39 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
-<!-- Modal Save Logic -->
+{% endblock %}
+
+{% block scripts %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  var calendarEl = document.getElementById('calendar');
+
+  window.calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: '/api/shift_events/',
+    dateClick: function(info) {
+      document.getElementById("shiftDate").value = info.dateStr;
+      var modal = new bootstrap.Modal(document.getElementById("createShiftModal"));
+      modal.show();
+    }
+  });
+
+  calendar.render();
+
+  document.getElementById("createShiftBtn").addEventListener("click", function() {
+      var modal = new bootstrap.Modal(document.getElementById("createShiftModal"));
+      modal.show();
+  });
+
+});
+</script>
+
 <script>
 document.getElementById("saveShiftBtn").addEventListener("click", function() {
-
-  console.log("✅ Save button clicked");
 
   const payload = {
     date: document.getElementById("shiftDate").value,
@@ -124,7 +116,7 @@ document.getElementById("saveShiftBtn").addEventListener("click", function() {
     employee: document.getElementById("shiftEmployee").value || null
   };
 
-  fetch("/api/create-shift/", {
+  fetch("/api/create_shift/", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(payload)
@@ -136,5 +128,4 @@ document.getElementById("saveShiftBtn").addEventListener("click", function() {
   });
 });
 </script>
-
 {% endblock %}

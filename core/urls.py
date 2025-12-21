@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import EmployeeProfileView
 from django.contrib.auth import views as auth_views
+
 from .views import (
     DashboardView,
     ProfileView,
@@ -8,7 +9,10 @@ from .views import (
     approve_request,
     decline_request,
     shift_events,
-    create_shift,  
+    create_shift,
+    schedule_status,
+    edit_profile,
+    profile_detail,    
 )
 
 urlpatterns = [
@@ -16,10 +20,13 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('calendar/', CalendarView.as_view(), name='calendar'),
     path("employee/<int:user_id>/", EmployeeProfileView.as_view(), name="profile"),
-
+    path("schedule-status/", schedule_status, name="schedule_status"),
+    path("profile/<int:user_id>/edit/", edit_profile, name="edit_profile"),
+    path("profile/<int:user_id>/", profile_detail, name="profile_detail"),
+    
     # API endpoints
-    path("api/shifts/", shift_events, name="shift_events"),
-    path("api/create-shift/", create_shift, name="create_shift"),  
+    path("api/shift_events/", shift_events, name="shift_events"),
+    path("api/create_shift/", create_shift, name="create_shift"),  
 
     # Request management
     path('requests/<int:request_id>/approve/', approve_request, name='approve_request'),

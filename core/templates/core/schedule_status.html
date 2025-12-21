@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Scheduling Gaps</h2>
+
+<h3>Unscheduled Days</h3>
+<ul>
+  {% for day in unscheduled_days %}
+    <li>{{ day }}</li>
+  {% empty %}
+    <li>All days have at least one shift.</li>
+  {% endfor %}
+</ul>
+
+<h3>Roles Without Assigned Employees</h3>
+<ul>
+  {% for role in unassigned_roles %}
+    <li>{{ role.name }}</li>
+  {% empty %}
+    <li>All roles have assigned employees.</li>
+  {% endfor %}
+</ul>
+
+<h3>Employees Without Shifts This Week</h3>
+<ul>
+  {% for employee in employees_without_shifts %}
+    <li>{{ employee.user.get_full_name }}</li>
+  {% empty %}
+    <li>All employees have shifts this week.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,93 @@
+/* Full-page centering */
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #e8f0ff, #ffffff);
+  font-family: 'Segoe UI', sans-serif;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Login card */
+.login-container {
+  background: #ffffff;
+  padding: 2.5rem;
+  width: 360px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Logo */
+.login-logo img {
+  width: 70px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+/* Title */
+h1 {
+  margin-bottom: 1.5rem;
+  color: #2a4b8d;
+  font-weight: 600;
+}
+
+/* Form */
+form {
+  width: 100%;
+}
+
+label {
+  display: block;
+  text-align: left;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #444;
+}
+
+input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.3rem;
+  border: 1px solid #b8c7e0;
+  border-radius: 6px;
+  background-color: #f7f9fc;
+}
+
+/* Button */
+button {
+  margin-top: 1.8rem;
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #2a4b8d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background-color: #1d3564;
+}
+
+/* Forgot password */
+.forgot-password {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #2a4b8d;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}

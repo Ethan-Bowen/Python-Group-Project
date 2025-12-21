@@ -117,7 +117,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -125,5 +125,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Move to new page after login/logout
-LOGIN_REDIRECT_URL = '/'    # after login, go to dashboard/home
-LOGOUT_REDIRECT_URL = 'login'   # after logout, go back home
+LOGIN_REDIRECT_URL = 'dashboard'    # go to dashboard/home
+LOGOUT_REDIRECT_URL = 'login'   # after logout, go back login
+LOGIN_URL = 'login'

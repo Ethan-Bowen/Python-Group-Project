@@ -5,6 +5,12 @@
 
     <h2>{{ employee.user.get_full_name }}</h2>
     <hr>
+	
+	{% if request.user.is_superuser or request.user.employee.role == "admin" %}
+    <a href="{% url 'edit_profile' user_obj.id %}" class="btn btn-warning mb-3">
+        Edit Profile
+    </a>
+{% endif %}
 
     <p><strong>Username:</strong> {{ employee.user.username }}</p>
     <p><strong>Email:</strong> {{ employee.user.email }}</p>

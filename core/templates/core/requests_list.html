@@ -2,8 +2,12 @@
 <ul>
   {% for req in requests %}
     <li>
-      {{ req.employee.user.username }} → {{ req.shift }}
+      <a href="{% url 'profile_detail' req.employee.user.id %}">
+        {{ req.employee.user.username }}
+      </a>
+      → {{ req.shift }}
       ({{ req.status }})
+
       {% if user.employee.role in "team_lead manager admin" %}
         <a href="{% url 'approve_request' req.id %}">Approve</a>
         <a href="{% url 'decline_request' req.id %}">Decline</a>
