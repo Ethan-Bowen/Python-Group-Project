@@ -1,5 +1,9 @@
 from django.urls import path
-from .views import EmployeeProfileView
+from .views import (
+    EmployeeProfileView,
+    profile_detail,
+    edit_profile,
+)
 from django.contrib.auth import views as auth_views
 
 from .views import (
